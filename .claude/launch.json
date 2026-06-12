@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "age-of-the-apes",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8612"],
+      "port": 8612
+    }
+  ]
+}
