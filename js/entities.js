@@ -11,7 +11,7 @@ function base(tx, ty, o) {
     id: nextId++, x: tx * TILE, y: ty * TILE, r: 10, dir: 0,
     hp: 40, maxHp: 40, speed: 90, dmg: 8,
     dead: false, deadT: 0, attackCd: 0, aggro: false, scared: 0,
-    waitT: 0, wpi: 0, reported: false,
+    waitT: 0, wpi: 0, reported: false, flashT: 0,
   }, o);
 }
 

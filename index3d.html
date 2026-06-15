@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>Age of the Apes — protótipo 3D</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0d100b;color:#cfd6bd;font-family:'Courier New',Courier,monospace;
+       overflow:hidden;width:100vw;height:100vh}
+  #wrap{position:relative;width:100vw;height:100vh}
+  #canvas{display:block;width:100vw;height:100vh;background:#0d100b;cursor:crosshair}
+
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;background:rgba(8,10,6,.93);z-index:30;text-align:center;padding:24px}
+  .hidden{display:none !important}
+  h1{color:#9fb86b;letter-spacing:6px;font-size:34px;margin-bottom:8px;text-transform:uppercase}
+  .sub{color:#8a8f78;max-width:640px;line-height:1.5;margin-bottom:18px}
+  button{background:#26301c;color:#cfd6bd;border:1px solid #5a6b43;padding:8px 18px;
+         font-family:inherit;font-size:15px;cursor:pointer;margin:4px}
+  button:hover{background:#39512f;color:#fff}
+  button:disabled{opacity:.4;cursor:default}
+
+  /* start screen attribute allocation */
+  #attrBox{border:1px solid #5a6b43;padding:14px 22px;margin-bottom:14px;background:rgba(20,24,14,.6)}
+  .attrRow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:15px}
+  .attrRow .nm{width:130px;text-align:left}
+  .attrRow .val{width:24px;color:#e8d35f;font-weight:bold}
+  .attrRow button{padding:0 10px;margin:0}
+  .attrRow .hint{color:#777f68;font-size:12px;text-align:left;flex:1}
+  #controls{color:#777f68;font-size:13px;line-height:1.7;margin-top:10px}
+
+  /* HUD */
+  .hudPanel{position:absolute;background:rgba(8,10,6,.72);border:1px solid #44513333;padding:6px 10px;
+            font-size:13px;pointer-events:none;z-index:10;line-height:1.5}
+  #hudTL{top:10px;left:10px;min-width:220px}
+  #hpbar{width:200px;height:12px;background:#26201c;border:1px solid #5a6b43;margin:2px 0 4px}
+  #hpfill{height:100%;background:#7fae4e;width:100%}
+  #hudTR{top:10px;right:10px;text-align:right}
+  #stars{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:20px;
+         color:#3a3a32;letter-spacing:3px;z-index:10;text-shadow:0 0 4px #000}
+  #stars .on{color:#ff6a4d}
+  #objective{position:absolute;bottom:38px;left:10px;max-width:430px;background:rgba(8,10,6,.72);
+             border-left:3px solid #6fa3c7;padding:6px 10px;font-size:13px;z-index:10;pointer-events:none}
+  #hintBar{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#6e7560;
+           font-size:11.5px;z-index:10;pointer-events:none;background:rgba(8,10,6,.6);padding:3px 10px}
+  #minimap{position:absolute;bottom:10px;right:10px;border:1px solid #5a6b43;z-index:10;
+           background:#0d100b;image-rendering:pixelated}
+  #notif{position:absolute;top:64px;left:50%;transform:translateX(-50%);z-index:15;
+         display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+  #notif div{background:rgba(8,10,6,.85);border:1px solid #5a6b43;padding:4px 14px;font-size:13px;
+             color:#dfe6c8;animation:nfade 4s forwards}
+  @keyframes nfade{0%{opacity:0;transform:translateY(-6px)}8%{opacity:1;transform:none}
+                   80%{opacity:1}100%{opacity:0}}
+  #zoneBanner{position:absolute;top:18%;left:0;right:0;text-align:center;font-size:26px;
+              letter-spacing:8px;color:#cfd6bd;text-transform:uppercase;opacity:0;z-index:12;
+              transition:opacity .8s;pointer-events:none;text-shadow:0 0 12px #000}
+  #zoneBanner.show{opacity:.95}
+
+  /* pointer-lock hint (mostra quando Esc libera o mouse) */
+  #lockHint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            background:rgba(8,10,6,.55);z-index:18;color:#cfd6bd;font-size:18px;letter-spacing:2px;
+            pointer-events:none}
+  #lockHint span{background:rgba(8,10,6,.85);border:1px solid #5a6b43;padding:10px 22px}
+
+  /* crosshair (mira em FPS) */
+  #crosshair{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);
+             pointer-events:none;z-index:11;display:none}
+  #crosshair.on{display:block}
+
+  /* retícula de Z-target: quatro cantos amarelos cercando o alvo, girando devagar */
+  #lockReticle{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;
+               pointer-events:none;z-index:12;display:none;
+               animation:lockspin 3s linear infinite;filter:drop-shadow(0 0 2px #000);
+    background:
+      linear-gradient(#e8d35f,#e8d35f) left top/13px 3px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) left top/3px 13px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) right top/13px 3px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) right top/3px 13px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) left bottom/13px 3px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) left bottom/3px 13px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) right bottom/13px 3px no-repeat,
+      linear-gradient(#e8d35f,#e8d35f) right bottom/3px 13px no-repeat}
+  @keyframes lockspin{to{transform:rotate(360deg)}}
+  #crosshair::before,#crosshair::after{content:"";position:absolute;background:#cfd6bdaa}
+  #crosshair::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+  #crosshair::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+
+  /* dialog */
+  #dialogPanel{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;width:72%;
+               max-width:680px;background:rgba(8,10,6,.95);border:1px solid #5a6b43;z-index:20;
+               padding:12px 16px}
+  #dlgName{color:#9fb86b;font-weight:bold;margin-bottom:6px;letter-spacing:1px}
+  #dlgText{line-height:1.5;margin-bottom:10px;font-size:14.5px}
+  #dlgOpts button{display:block;width:100%;text-align:left;margin:3px 0;font-size:13.5px}
+  #dlgOpts button .chk{color:#e8d35f}
+  #dlgOpts button.off{color:#6a6a5d;cursor:default}
+  #dlgOpts button.off:hover{background:#26301c}
+
+  /* inventory */
+  #invPanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:560px;
+            max-height:86%;overflow:auto;background:rgba(8,10,6,.96);border:1px solid #5a6b43;
+            z-index:25;padding:16px 20px;font-size:13.5px;line-height:1.6}
+  #invPanel h2{color:#9fb86b;font-size:16px;letter-spacing:2px;margin-bottom:8px}
+  #invPanel h3{color:#8a8f78;font-size:13px;margin:10px 0 4px;border-bottom:1px solid #38422a}
+  #invPanel button{padding:1px 10px;font-size:12px;margin-left:8px}
+  .eq{color:#e8d35f}
+
+  #endStats,#deathMsg{margin:10px 0 16px;line-height:1.9;font-size:15px}
+  .pathTag{color:#6fe3ff}
+
+  /* mode badge — pequena diferença visual em relação ao 2D */
+  .mode3d{position:absolute;top:10px;left:50%;transform:translateX(-50%) translateY(36px);
+          color:#6fe3ff;font-size:11px;letter-spacing:2px;z-index:10;pointer-events:none;
+          background:rgba(8,10,6,.6);padding:2px 8px;border:1px solid #1c3a48}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="canvas"></canvas>
+  <canvas id="minimap" width="220" height="144"></canvas>
+  <div id="crosshair"></div>
+  <div id="lockReticle"></div>
+  <div class="mode3d">3D · TERCEIRA PESSOA · THREE.JS</div>
+
+  <div id="hudTL" class="hudPanel">
+    <div id="hptext">VIDA 100/100</div>
+    <div id="hpbar"><div id="hpfill"></div></div>
+    <div id="weaponLine"></div>
+    <div id="suppliesLine"></div>
+  </div>
+  <div id="hudTR" class="hudPanel">
+    <div style="color:#8a8f78">REPUTAÇÃO</div>
+    <div>Militaristas <span id="repMil"></span></div>
+    <div>Pacifistas <span id="repPac"></span></div>
+    <div>Resistência <span id="repHum"></span></div>
+  </div>
+  <div id="stars"></div>
+  <div id="objective"></div>
+  <div id="notif"></div>
+  <div id="zoneBanner"></div>
+  <div id="hintBar">WASD mover · Shift correr · F travar alvo (Z-target) · Espaço pular · Q esquiva · clique atacar · E interagir · 1/2 arma · H medkit · I inventário · M som · Esc mouse</div>
+
+  <div id="lockHint" class="hidden"><span>Clique para retomar o controle</span></div>
+
+  <div id="dialogPanel" class="hidden">
+    <div id="dlgName"></div>
+    <div id="dlgText"></div>
+    <div id="dlgOpts"></div>
+  </div>
+
+  <div id="invPanel" class="hidden"><div id="invBody"></div></div>
+
+  <div id="startScreen" class="overlay">
+    <h1>Age of the Apes</h1>
+    <div class="sub">Décadas após o Colapso, primatas hiperinteligentes dominam a Terra.
+      Você é um símio exilado do exército do General — caçado pelos Militaristas,
+      observado pelos Pacifistas e uma esperança improvável para os últimos humanos.
+      Cada tiro disparado atrai as patrulhas que querem sua cabeça.</div>
+    <div id="attrBox" style="margin-bottom:10px">
+      <div style="color:#9fb86b;margin-bottom:6px">ESCOLHA SUA ESPÉCIE</div>
+      <div id="speciesRow" style="display:flex;gap:6px;justify-content:center"></div>
+      <div id="speciesDesc" style="color:#8a8f78;font-size:12.5px;margin-top:6px;min-height:18px"></div>
+    </div>
+    <div id="attrBox">
+      <div style="color:#9fb86b;margin-bottom:6px">DISTRIBUA <span id="ptsLeft">3</span> PONTOS</div>
+      <div id="attrRows"></div>
+    </div>
+    <button id="btnStart">▶ COMEÇAR (3D)</button>
+    <div id="controls">WASD/setas: mover (Shift: correr) · <b style="color:#e8d35f">F: travar alvo (Z-target)</b> · Espaço: pular · Q: esquiva<br>
+      mouse: mirar e atacar · E: interagir/falar · 1/2: trocar arma · H: medkit · I: inventário<br>
+      F5/F9: salvar/carregar · M: som · Esc: liberar o mouse</div>
+  </div>
+
+  <div id="endScreen" class="overlay hidden">
+    <h1 style="font-size:26px">Arca Recuperada</h1>
+    <div id="endStats"></div>
+    <button id="btnContinue">Continuar explorando</button>
+  </div>
+
+  <div id="deathScreen" class="overlay hidden">
+    <h1 style="font-size:26px;color:#c75b4a">Você caiu</h1>
+    <div id="deathMsg">As patrulhas do General deixam seu corpo para os abutres...<br>mas a Resistência te arrasta de volta ao assentamento.</div>
+    <button id="btnRespawn">Acordar no assentamento</button>
+  </div>
+</div>
+
+<!-- Importmap para resolver "three" e os addons de post-processing como módulos ESM de CDN -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="js/main3d.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# ───────────────────────────── Unreal Engine ─────────────────────────────
+# UE generates these; never commit them. Patterns are path-independent so they
+# match wherever UE nests the project (e.g. unreal/AgeOfTheApes/...).
+# Keep Config/, Content/, Source/, and the .uproject.
+**/Binaries/
+**/Build/
+**/DerivedDataCache/
+**/Intermediate/
+**/Saved/
+**/.vs/
+**/.vscode/
+*.VC.db
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.xcodeproj/
+*.xcworkspace/
+**/*.autosave
+
+# ──────────────────────────── Asset working files ────────────────────────
+# Blender backups and DCC temp files
+*.blend1
+*.blend2
+*.tmp
+
+# ─────────────────────────────── OS / editor ─────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+.idea/

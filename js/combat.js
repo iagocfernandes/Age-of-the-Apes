@@ -65,8 +65,10 @@ export function damageEntity(e, dmg, src = 'player') {
     }
   }
   fxText(e.x, e.y - 14, '-' + Math.round(dmg), '#ffd27a');
+  e.flashT = 0.18; // feedback de dano no render3d (emissive vermelho)
   sfx('hit');
   if (src === 'player') {
+    G.hitStop = Math.max(G.hitStop, 0.05); // micro-pausa de impacto (feel Zelda)
     if (e.faction === 'mil') {
       if (e.ai === 'guard' && !G.vaultHostile) { G.vaultHostile = true; G.captainPeace = false; }
       if (!e.aggro) gainAlert(1, 'Você atacou o exército símio!');

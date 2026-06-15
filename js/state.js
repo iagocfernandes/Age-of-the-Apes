@@ -18,7 +18,7 @@ export function angDiff(a, b) {
   return d > Math.PI ? TAU - d : d;
 }
 
-export const G = { saveSlot: null, muted: false, mode: 'start' };
+export const G = { saveSlot: null, muted: false, mode: 'start', pitch: 0 };
 
 // Espécies jogáveis — modificadores sobre os atributos base (5)
 export const SPECIES = [
@@ -43,10 +43,13 @@ export function resetCore(attrs, speciesId) {
     flags: { artifactTaken: false, liraGreeted: false, patrolSpotted: 0 },
     entities: [], projectiles: [], pickups: [], effects: [], containers: [],
     camera: { x: 0, y: 0 }, zone: '', hint: null, kills: 0,
+    lockOn: null, hitStop: 0, // Z-targeting (alvo travado) + micro-pausa no impacto
+    jumpH: 0, jumpV: 0,
+    camYaw: 0, // giro da câmera (mouse), independente da frente do personagem
     player: {
       x: 56.5 * TILE, y: 33.5 * TILE, r: sp.r, hp: sp.hp, maxHp: sp.hp,
       species: sp.id, speciesName: sp.name, color: sp.color,
-      dir: 0, attackCd: 0, hurtT: 0, dead: false,
+      dir: 0, vx: 0, vy: 0, attackCd: 0, hurtT: 0, dead: false,
       attrs: attrs || { FOR: 5, PER: 5, CAR: 5, AGI: 5 },
       skills: { melee: { xp: 0, lv: 1 }, ranged: { xp: 0, lv: 1 }, speech: { xp: 0, lv: 1 } },
       inv: { scrap: 10, medkits: 1, ammo: 0, artifact: false, artifactDelivered: false, seal: false },
