@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8612"],
       "port": 8612
+    },
+    {
+      "name": "tde-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/iagoamorim/Projects/todo-dia-energia-app", "--", "--port", "5173", "--strictPort"],
+      "port": 5173
     }
   ]
 }

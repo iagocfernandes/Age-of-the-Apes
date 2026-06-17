@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -m http.server 8612)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(kill 43608)",
+      "Bash(node --input-type=module --check)",
+      "Bash(kill 51797)",
+      "Bash(lsof -nP -iTCP:8612 -sTCP:LISTEN)",
+      "Bash(cat .gitignore)",
+      "Bash(cat .gitattributes)",
+      "Bash(git lfs *)",
+      "Bash(cd \"/Users/iagoamorim/Projects/Age of the Apes/unreal/AgeOfTheApes\"; echo \"=== DefaultEngine.ini \\(final\\) ===\"; tail -30 Config/DefaultEngine.ini 2>/dev/null; echo; echo \"=== remote_execution.py helper da engine ===\"; find /Users/Shared/UnrealEngine/UE_5.7 -name \"remote_execution.py\" 2>/dev/null | head; echo; echo \"=== python do sistema \\(pra rodar o cliente\\) ===\"; which python3; python3 --version)",
+      "Bash(/usr/bin/python3 _run.py -c \"import unreal; unreal.log\\('[AOA] remote channel OK'\\)\")",
+      "Bash(LOG=\"/Users/iagoamorim/Library/Logs/Unreal Engine/AgeOfTheApesEditor/AgeOfTheApes.log\"; echo \"=== Python / Remote execution no log ===\"; grep -iE \"remote.?execut|PythonScriptPlugin|Python.*develop|multicast\" \"$LOG\" 2>/dev/null | tail -20; echo; echo \"=== LogPython geral ===\"; grep -iE \"LogPython\" \"$LOG\" 2>/dev/null | tail -10)",
+      "Bash(/usr/bin/python3 _run.py -c \"import unreal; unreal.log\\('[AOA] remote channel OK'\\); print\\('remote OK, actors:', len\\(unreal.get_editor_subsystem\\(unreal.EditorActorSubsystem\\).get_all_level_actors\\(\\)\\)\\)\")",
+      "Bash(/usr/bin/python3 _send.py -c 'import unreal *)",
+      "Bash(/usr/bin/python3 _send.py 04_dusk_mood.py)",
+      "Bash(awk '/^class SkyLightComponent/{f=1} f&&/^class /&&!/SkyLightComponent/{if\\(seen\\)exit} {if\\(f\\)print}' '/Users/iagoamorim/Projects/Age of the Apes/unreal/AgeOfTheApes/Intermediate/PythonStub/unreal.py')",
+      "Bash(/usr/bin/python3 _send.py 03_toon_clean.py)",
+      "Bash(find \"/Users/iagoamorim/Projects/Age of the Apes/unreal/AgeOfTheApes/Saved/Screenshots\" -name \"*.png\" -newermt \"-30 seconds\")",
+      "Bash([ -f \"$MEM\" ])",
+      "Bash(xcode-select -p)",
+      "Bash(xcodebuild -version)",
+      "Read(//Users/Shared/**)",
+      "Read(//Applications/**)",
+      "Bash(mdfind -name \"UnrealEditor\")",
+      "Bash(time \"/Users/Shared/UnrealEngine/UE_5.7/Engine/Build/BatchFiles/Mac/Build.sh\" AgeOfTheApesEditor Mac Development -Project=\"/Users/iagoamorim/Projects/Age of the Apes/unreal/AgeOfTheApes/AgeOfTheApes.uproject\" -TargetType=Editor -Progress -NoHotReloadFromIDE)",
+      "Bash(python3 \"unreal/scripts/_send.py\" unreal/scripts/05_tile_material.py)"
+    ]
+  }
+}
