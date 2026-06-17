@@ -24,6 +24,10 @@
 *.blend2
 *.tmp
 
+# ─────────────────────────── Packaged/local builds ───────────────────────
+# Packaged game builds are release artifacts, not source. Keep them outside git.
+Builds/
+
 # ─────────────────────────────── OS / editor ─────────────────────────────
 .DS_Store
 Thumbs.db
