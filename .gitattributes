@@ -24,3 +24,6 @@
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
 *.ogg filter=lfs diff=lfs merge=lfs -text
+
+# Archived packaged builds — archive branch only
+release-artifacts/*.zip filter=lfs diff=lfs merge=lfs -text
